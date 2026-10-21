@@ -132,7 +132,7 @@ export async function buildServer(config?: Partial<Config>): Promise<FastifyInst
   });
 
   const clientWindows = new Map<string, { requests: number; resetAt: number }>();
-  const maxTrackedClients = 10_000;
+  const maxTrackedClients = config?.maxTrackedRateLimitClients ?? 10_000;
 
   app.addHook("onRequest", async (request, reply) => {
     const now = Date.now();

@@ -203,6 +203,7 @@ export interface Config {
   readonly trustedProxies: readonly string[];
   readonly rateLimitMax?: number;
   readonly rateLimitWindowMs?: number;
+  readonly maxTrackedRateLimitClients?: number;
   readonly readinessRetryAfterSeconds: number;
   // Optional bearer token for the metrics endpoint. When set, /metrics requires
   // a matching Bearer token; when unset it is unauthenticated.
