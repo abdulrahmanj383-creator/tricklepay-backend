@@ -323,3 +323,21 @@ describe("GET /docs/yaml (OpenAPI spec — YAML)", () => {
     expect(response.body).toContain("TricklePay API");
   });
 });
+
+
+describe("README endpoint table", () => {
+  it("contains every generated OpenAPI route except documentation endpoints", async () => {
+    const spec = await getSpec();
+    const paths = spec.paths as Record<string, Record<string, unknown>>;
+    const expected = new Set<string>();
+    for (const [path, methods] of Object.entries(paths)) {
+      if (path.startsWith("/docs")) continue;
+      for (const method of Object.keys(methods)) if (["get","post","put","patch","delete","head"].includes(method)) expected.add(`${method.toUpperCase()} ${path}`);
+    }
+    const readme = (await import("node:fs/promises")).readFile(new URL("../../README.md", import.meta.url), "utf8");
+    const actual = new Set<string>();
+    for (const line of (await readme).split("\n")) { const m=line.match(/^\| `?(GET|POST|PUT|PATCH|DELETE|HEAD)`? \| `([^`]+)` \|/); if (m) actual.add(`${m[1]} ${m[2]}`); }
+    expect([...expected].filter((x) => !actual.has(x))).toEqual([]);
+    expect([...actual].filter((x) => !expected.has(x))).toEqual([]);
+  });
+});
